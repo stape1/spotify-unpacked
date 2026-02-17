@@ -10,6 +10,7 @@ import { ref } from 'vue'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Button } from '@/components/ui/button'
 import FileDropZone from '@/components/FileDropZone.vue'
+import StatsCard from '@/components/StatsCard.vue'
 import { useDataStore } from '@/stores/data'
 
 const dataStore = useDataStore()
@@ -42,23 +43,7 @@ function onClear() {
         Clear data
       </Button>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Statistics</CardTitle>
-          <CardDescription>Summary of your loaded dataset</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <template v-if="dataStore.hasData">
-            <ul class="text-sm space-y-1">
-              <li>{{ dataStore.fileCount }} {{ dataStore.fileCount === 1 ? 'file' : 'files' }} loaded</li>
-              <li v-for="file in dataStore.files" :key="file.name" class="text-muted-foreground truncate">
-                {{ file.name }}
-              </li>
-            </ul>
-          </template>
-          <p v-else class="text-muted-foreground text-sm">No data loaded yet.</p>
-        </CardContent>
-      </Card>
+      <StatsCard />
     </div>
   </ScrollArea>
 </template>
