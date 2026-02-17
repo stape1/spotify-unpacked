@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useDark } from '@vueuse/core'
 import { useVisualisationStore } from '@/stores/visualisation'
 import { Bar, Bubble, Doughnut, Line, Pie, PolarArea, Radar, Scatter } from 'vue-chartjs'
 
 const store = useVisualisationStore()
+const isDark = useDark({ storageKey: 'spotify-unpacked-colour-mode' })
 
 const barData = {
   labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -78,16 +81,54 @@ const scatterData = {
   ],
 }
 
-const chartOptions = { responsive: true, maintainAspectRatio: false }
+const baseOptions = computed(() => {
+  const textColour = isDark.value ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.8)'
+  const gridColour = isDark.value ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
+  return { textColour, gridColour }
+})
+
+const cartesianOptions = computed(() => {
+  const { textColour, gridColour } = baseOptions.value
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { ticks: { color: textColour }, grid: { color: gridColour } },
+      y: { ticks: { color: textColour }, grid: { color: gridColour } },
+    },
+    plugins: { legend: { labels: { color: textColour } } },
+  }
+})
+
+const radialOptions = computed(() => {
+  const { textColour, gridColour } = baseOptions.value
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: { ticks: { color: textColour, backdropColor: 'transparent' }, grid: { color: gridColour }, pointLabels: { color: textColour } },
+    },
+    plugins: { legend: { labels: { color: textColour } } },
+  }
+})
+
+const simpleOptions = computed(() => {
+  const { textColour } = baseOptions.value
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: textColour } } },
+  }
+})
 </script>
 
 <template>
-  <Bar v-if="store.selectedChart === 'bar'" :data="barData" :options="chartOptions" />
-  <Line v-else-if="store.selectedChart === 'line'" :data="lineData" :options="chartOptions" />
-  <Pie v-else-if="store.selectedChart === 'pie'" :data="pieData" :options="chartOptions" />
-  <Doughnut v-else-if="store.selectedChart === 'doughnut'" :data="doughnutData" :options="chartOptions" />
-  <Radar v-else-if="store.selectedChart === 'radar'" :data="radarData" :options="chartOptions" />
-  <PolarArea v-else-if="store.selectedChart === 'polarArea'" :data="polarAreaData" :options="chartOptions" />
-  <Bubble v-else-if="store.selectedChart === 'bubble'" :data="bubbleData" :options="chartOptions" />
-  <Scatter v-else-if="store.selectedChart === 'scatter'" :data="scatterData" :options="chartOptions" />
+  <Bar v-if="store.selectedChart === 'bar'" :key="`bar-${isDark}`" :data="barData" :options="cartesianOptions" />
+  <Line v-else-if="store.selectedChart === 'line'" :key="`line-${isDark}`" :data="lineData" :options="cartesianOptions" />
+  <Pie v-else-if="store.selectedChart === 'pie'" :key="`pie-${isDark}`" :data="pieData" :options="simpleOptions" />
+  <Doughnut v-else-if="store.selectedChart === 'doughnut'" :key="`doughnut-${isDark}`" :data="doughnutData" :options="simpleOptions" />
+  <Radar v-else-if="store.selectedChart === 'radar'" :key="`radar-${isDark}`" :data="radarData" :options="radialOptions" />
+  <PolarArea v-else-if="store.selectedChart === 'polarArea'" :key="`polar-${isDark}`" :data="polarAreaData" :options="radialOptions" />
+  <Bubble v-else-if="store.selectedChart === 'bubble'" :key="`bubble-${isDark}`" :data="bubbleData" :options="cartesianOptions" />
+  <Scatter v-else-if="store.selectedChart === 'scatter'" :key="`scatter-${isDark}`" :data="scatterData" :options="cartesianOptions" />
 </template>
