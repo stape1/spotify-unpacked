@@ -9,7 +9,9 @@ const visStore = useVisualisationStore()
 const dataStore = useDataStore()
 const isDark = useDark({ storageKey: 'spotify-unpacked-colour-mode' })
 
-const currentData = computed(() => dataStore.getChartData(visStore.selectedChart))
+// Each vue-chartjs component expects its specific ChartData variant (e.g. ChartData<"bar">),
+// but data is selected dynamically at runtime. The v-if guards in the template ensure correctness.
+const currentData = computed(() => dataStore.getChartData(visStore.selectedChart) as any)
 
 const baseOptions = computed(() => {
   const textColour = isDark.value ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.8)'
