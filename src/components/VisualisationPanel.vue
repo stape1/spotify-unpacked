@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import ChartDisplay from '@/visualisations/ChartDisplay.vue'
 </script>
 
 <template>
@@ -13,10 +14,10 @@ import {
       <CardHeader>
         <CardTitle>Visualisation</CardTitle>
       </CardHeader>
-      <CardContent class="flex flex-1 items-center justify-center">
-        <p class="text-muted-foreground text-sm">
-          Upload data to get started.
-        </p>
+      <CardContent class="relative flex flex-1">
+        <div class="absolute inset-0 p-6 pt-0">
+          <ChartDisplay />
+        </div>
       </CardContent>
     </Card>
   </div>
