@@ -7,27 +7,6 @@ export interface LoadedFile {
   size: number
 }
 
-interface StreamingEntry {
-  ts: string
-  ms_played: number
-  master_metadata_track_name?: string
-  master_metadata_album_artist_name?: string
-}
-
-interface PlaylistData {
-  playlists: {
-    name: string
-    lastModifiedDate: string
-    items: Array<{
-      track?: {
-        trackName: string
-        artistName: string
-      }
-      addedDate: string
-    }>
-  }[]
-}
-
 const dummyChartData: Record<string, ChartData> = {
   bar: {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -127,174 +106,12 @@ export const useDataStore = defineStore('data', () => {
   const files = ref<LoadedFile[]>([])
   const isLoading = ref(false)
   const chartData = ref<Record<string, ChartData>>({ ...dummyChartData })
-  const streamingData = ref<StreamingEntry[]>([])
-  const playlistData = ref<PlaylistData | null>(null)
 
   const fileCount = computed(() => files.value.length)
   const hasData = computed(() => files.value.length > 0)
 
   function getChartData(chartType: string): ChartData | undefined {
     return chartData.value[chartType]
-  }
-
-  async function parseStreamingFile(file: File): Promise<StreamingEntry[]> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        try {
-          const content = event.target?.result as string
-          const data = JSON.parse(content) as StreamingEntry[]
-          resolve(data)
-        } catch (error) {
-          reject(error)
-        }
-      }
-      reader.onerror = () => reject(reader.error)
-      reader.readAsText(file)
-    })
-  }
-
-  async function parsePlaylistFile(file: File): Promise<PlaylistData> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        try {
-          const content = event.target?.result as string
-          const data = JSON.parse(content) as PlaylistData
-          resolve(data)
-        } catch (error) {
-          reject(error)
-        }
-      }
-      reader.onerror = () => reject(reader.error)
-      reader.readAsText(file)
-    })
-  }
-
-  function generateStreamingChart(): void {
-    if (streamingData.value.length === 0) {
-      chartData.value.bar = { ...dummyChartData.bar }
-      return
-    }
-
-    // Group by month and sum minutes played
-    const monthlyData: Record<string, number> = {}
-
-    for (const entry of streamingData.value) {
-      if (entry.ms_played > 0) {
-        const date = new Date(entry.ts)
-        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
-        const minutes = entry.ms_played / 60000
-
-        monthlyData[monthKey] = (monthlyData[monthKey] || 0) + minutes
-      }
-    }
-
-    // Sort by month
-    const sortedMonths = Object.keys(monthlyData).sort()
-    const labels = sortedMonths.map((month) => {
-      const [year, monthNum] = month.split('-')
-      const date = new Date(parseInt(year), parseInt(monthNum) - 1)
-      return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
-    })
-
-    const data = sortedMonths.map((month) => Math.round(monthlyData[month]))
-
-    chartData.value.bar = {
-      labels,
-      datasets: [
-        {
-          label: 'Minutes Streamed',
-          backgroundColor: '#6366f1',
-          data,
-        },
-      ],
-    }
-  }
-
-  function generatePlaylistBubbleChart(): void {
-    if (!playlistData.value || streamingData.value.length === 0) {
-      chartData.value.bubble = { ...dummyChartData.bubble }
-      return
-    }
-
-    const bubbleData = []
-    const playlistStats: Record<
-      string,
-      { totalMinutes: number; uniqueDays: Set<string>; trackCount: number }
-    > = {}
-
-    // Build a map of track names to streaming data for quick lookup
-    const trackStreamingMap: Record<string, StreamingEntry[]> = {}
-    for (const entry of streamingData.value) {
-      if (entry.ms_played > 0 && entry.master_metadata_track_name && entry.master_metadata_album_artist_name) {
-        const key = `${entry.master_metadata_track_name}|${entry.master_metadata_album_artist_name}`.toLowerCase()
-        if (!trackStreamingMap[key]) {
-          trackStreamingMap[key] = []
-        }
-        trackStreamingMap[key].push(entry)
-      }
-    }
-
-    // Process each playlist
-    for (const playlist of playlistData.value.playlists) {
-      playlistStats[playlist.name] = {
-        totalMinutes: 0,
-        uniqueDays: new Set(),
-        trackCount: playlist.items.length,
-      }
-
-      // Match tracks in playlist with streaming data
-      for (const item of playlist.items) {
-        if (item.track) {
-          const trackKey = `${item.track.trackName}|${item.track.artistName}`.toLowerCase()
-          const streamingEntries = trackStreamingMap[trackKey] || []
-
-          for (const entry of streamingEntries) {
-            playlistStats[playlist.name].totalMinutes += entry.ms_played / 60000
-            const dayKey = new Date(entry.ts).toISOString().split('T')[0]
-            playlistStats[playlist.name].uniqueDays.add(dayKey)
-          }
-        }
-      }
-    }
-
-    // Create bubble chart data
-    const bubbleDataPoints = []
-    const colors = [
-      'rgba(99,102,241,0.6)',
-      'rgba(236,72,153,0.6)',
-      'rgba(245,158,11,0.6)',
-      'rgba(16,185,129,0.6)',
-      'rgba(59,130,246,0.6)',
-      'rgba(139,92,246,0.6)',
-      'rgba(236,72,153,0.6)',
-      'rgba(34,197,94,0.6)',
-    ]
-
-    Object.entries(playlistStats).forEach(([playlistName, stats], index) => {
-      if (stats.totalMinutes > 0) {
-        const uniqueDaysCount = stats.uniqueDays.size
-        const avgMinutesPerDay = stats.totalMinutes / (uniqueDaysCount || 1)
-
-        bubbleDataPoints.push({
-          x: uniqueDaysCount,
-          y: Math.round(stats.totalMinutes),
-          r: Math.round(avgMinutesPerDay / 5) + 5,
-          label: playlistName,
-        })
-      }
-    })
-
-    chartData.value.bubble = {
-      datasets: [
-        {
-          label: 'Playlists',
-          backgroundColor: colors[0],
-          data: bubbleDataPoints,
-        },
-      ],
-    }
   }
 
   async function loadFiles(rawFiles: File[]) {
@@ -305,32 +122,8 @@ export const useDataStore = defineStore('data', () => {
       size: f.size,
     }))
 
-    // Parse streaming files
-    for (const file of rawFiles) {
-      if (file.name.toLowerCase().includes('streaming')) {
-        try {
-          const entries = await parseStreamingFile(file)
-          streamingData.value = entries
-          generateStreamingChart()
-          generatePlaylistBubbleChart()
-        } catch (error) {
-          console.error('Error parsing streaming file:', error)
-        }
-      }
-    }
-
-    // Parse playlist files
-    for (const file of rawFiles) {
-      if (file.name.toLowerCase().includes('playlist')) {
-        try {
-          const data = await parsePlaylistFile(file)
-          playlistData.value = data
-          generatePlaylistBubbleChart()
-        } catch (error) {
-          console.error('Error parsing playlist file:', error)
-        }
-      }
-    }
+    // TODO: parse files and populate chartData with real data
+    // chartData.value = buildChartDataFromParsed(...)
 
     isLoading.value = false
   }
@@ -345,40 +138,14 @@ export const useDataStore = defineStore('data', () => {
 
     files.value.push(...newFiles)
 
-    // Parse streaming files
-    for (const file of rawFiles) {
-      if (file.name.toLowerCase().includes('streaming')) {
-        try {
-          const entries = await parseStreamingFile(file)
-          streamingData.value.push(...entries)
-          generateStreamingChart()
-          generatePlaylistBubbleChart()
-        } catch (error) {
-          console.error('Error parsing streaming file:', error)
-        }
-      }
-    }
-
-    // Parse playlist files
-    for (const file of rawFiles) {
-      if (file.name.toLowerCase().includes('playlist')) {
-        try {
-          const data = await parsePlaylistFile(file)
-          playlistData.value = data
-          generatePlaylistBubbleChart()
-        } catch (error) {
-          console.error('Error parsing playlist file:', error)
-        }
-      }
-    }
+    // TODO: parse files and populate chartData with real data
+    // chartData.value = buildChartDataFromParsed(...)
 
     isLoading.value = false
   }
 
   function clear() {
     files.value = []
-    streamingData.value = []
-    playlistData.value = null
     chartData.value = { ...dummyChartData }
   }
 

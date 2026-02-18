@@ -32,50 +32,6 @@ const cartesianOptions = computed(() => {
   }
 })
 
-const bubbleChartOptions = computed(() => {
-  const { textColour, gridColour } = baseOptions.value
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: { ticks: { color: textColour }, grid: { color: gridColour },
-        title: { display: true, text: 'Days Played', color: textColour, font: { weight: 'bold' } },
-      },
-      y: { ticks: { color: textColour }, grid: { color: gridColour },
-        title: { display: true, text: 'Minutes Played', color: textColour, font: { weight: 'bold' } },
-       },
-    },
-    plugins: {
-      legend: { labels: { color: textColour } },
-      tooltip: {
-        backgroundColor: 'rgba(0,0,0,0.9)',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        padding: 12,
-        displayColors: false,
-        borderColor: 'rgba(255,255,255,0.3)',
-        borderWidth: 1,
-        callbacks: {
-          title: function(context: any) {
-            return context[0]?.raw?.label || 'Playlist'
-          },
-          label: function(context: any) {
-            const data = context.raw
-            const minutes = data.y || 0
-            const days = data.x || 0
-            const avgDaily = days > 0 ? (minutes / days).toFixed(1) : 0
-            return [
-              `Minutes Played: ${minutes}`,
-              `Days Played: ${days}`,
-              `Avg per Day: ${avgDaily} mins`,
-            ]
-          },
-        },
-      },
-    },
-  }
-})
-
 const radialOptions = computed(() => {
   const { textColour, gridColour } = baseOptions.value
   return {
@@ -100,7 +56,6 @@ const simpleOptions = computed(() => {
     plugins: { legend: { labels: { color: textColour } } },
   }
 })
-
 </script>
 
 <template>
@@ -145,7 +100,7 @@ const simpleOptions = computed(() => {
       v-else-if="visStore.selectedChart === 'bubble'"
       :key="`bubble-${isDark}`"
       :data="currentData"
-      :options="bubbleChartOptions"
+      :options="cartesianOptions"
     />
     <Scatter
       v-else-if="visStore.selectedChart === 'scatter'"
