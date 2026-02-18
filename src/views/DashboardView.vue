@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import AppHeader from '@/components/AppHeader.vue'
 import DataPanel from '@/components/DataPanel.vue'
 import VisualisationPanel from '@/components/VisualisationPanel.vue'

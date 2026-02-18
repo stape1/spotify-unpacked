@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Gift } from 'lucide-vue-next'
 import {
@@ -47,11 +41,7 @@ const chartTypes = [
                 <SelectValue placeholder="Select a chart type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem
-                  v-for="chart in chartTypes"
-                  :key="chart.value"
-                  :value="chart.value"
-                >
+                <SelectItem v-for="chart in chartTypes" :key="chart.value" :value="chart.value">
                   {{ chart.label }}
                 </SelectItem>
               </SelectContent>

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Upload, FileCheck, LoaderCircle } from 'lucide-vue-next'
+import { useDataStore } from '@/stores/data'
 
 const emit = defineEmits<{
   filesDropped: [files: File[]]
 }>()
 
+const dataStore = useDataStore()
 const isDragOver = ref(false)
 const isProcessing = ref(false)
-const fileCount = ref(0)
 const fileInput = ref<HTMLInputElement | null>(null)
 
 function onDragOver(event: DragEvent) {
@@ -69,7 +70,6 @@ async function onDrop(event: DragEvent) {
   const files = await collectFiles(event)
   isProcessing.value = false
   if (files.length > 0) {
-    fileCount.value = files.length
     emit('filesDropped', files)
   }
 }
@@ -82,14 +82,12 @@ function onFileSelected(event: Event) {
   const input = event.target as HTMLInputElement
   const files = Array.from(input.files ?? [])
   if (files.length > 0) {
-    fileCount.value = files.length
     emit('filesDropped', files)
   }
   input.value = ''
 }
 
 function reset() {
-  fileCount.value = 0
   isProcessing.value = false
 }
 
@@ -113,10 +111,10 @@ defineExpose({ reset })
       <LoaderCircle class="text-primary h-6 w-6 animate-spin" />
       <p class="text-muted-foreground text-sm">Reading files...</p>
     </template>
-    <template v-else-if="fileCount > 0 && !isDragOver">
+    <template v-else-if="dataStore.fileCount > 0 && !isDragOver">
       <FileCheck class="text-primary h-6 w-6" />
       <p class="text-muted-foreground text-sm">
-        Uploaded {{ fileCount }} {{ fileCount === 1 ? 'file' : 'files' }}
+        Uploaded {{ dataStore.fileCount }} {{ dataStore.fileCount === 1 ? 'file' : 'files' }}
       </p>
     </template>
     <template v-else>

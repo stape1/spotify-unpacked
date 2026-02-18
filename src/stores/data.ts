@@ -10,30 +10,56 @@ export interface LoadedFile {
 const dummyChartData: Record<string, ChartData> = {
   bar: {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [{ label: 'Streams', backgroundColor: '#6366f1', data: [120, 190, 80, 140, 200, 160] }],
+    datasets: [
+      { label: 'Streams', backgroundColor: '#6366f1', data: [120, 190, 80, 140, 200, 160] },
+    ],
   },
   line: {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [{ label: 'Listeners', borderColor: '#6366f1', data: [65, 59, 80, 81, 56, 72], fill: false }],
+    datasets: [
+      { label: 'Listeners', borderColor: '#6366f1', data: [65, 59, 80, 81, 56, 72], fill: false },
+    ],
   },
   pie: {
     labels: ['Pop', 'Rock', 'Jazz', 'Hip-Hop', 'Electronic'],
-    datasets: [{ backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'], data: [30, 20, 15, 25, 10] }],
+    datasets: [
+      {
+        backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'],
+        data: [30, 20, 15, 25, 10],
+      },
+    ],
   },
   doughnut: {
     labels: ['Mobile', 'Desktop', 'Tablet', 'Smart TV'],
-    datasets: [{ backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981'], data: [45, 30, 15, 10] }],
+    datasets: [
+      { backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981'], data: [45, 30, 15, 10] },
+    ],
   },
   radar: {
     labels: ['Energy', 'Danceability', 'Valence', 'Acousticness', 'Tempo', 'Speechiness'],
     datasets: [
-      { label: 'Track A', borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.2)', data: [80, 65, 70, 30, 55, 40] },
-      { label: 'Track B', borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.2)', data: [50, 80, 60, 70, 45, 30] },
+      {
+        label: 'Track A',
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.2)',
+        data: [80, 65, 70, 30, 55, 40],
+      },
+      {
+        label: 'Track B',
+        borderColor: '#ec4899',
+        backgroundColor: 'rgba(236,72,153,0.2)',
+        data: [50, 80, 60, 70, 45, 30],
+      },
     ],
   },
   polarArea: {
     labels: ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness'],
-    datasets: [{ backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'], data: [70, 85, 60, 30, 45] }],
+    datasets: [
+      {
+        backgroundColor: ['#6366f1', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'],
+        data: [70, 85, 60, 30, 45],
+      },
+    ],
   },
   bubble: {
     datasets: [
@@ -102,10 +128,26 @@ export const useDataStore = defineStore('data', () => {
     isLoading.value = false
   }
 
+  async function addFiles(rawFiles: File[]) {
+    isLoading.value = true
+
+    const newFiles = rawFiles.map((f) => ({
+      name: f.name,
+      size: f.size,
+    }))
+
+    files.value.push(...newFiles)
+
+    // TODO: parse files and populate chartData with real data
+    // chartData.value = buildChartDataFromParsed(...)
+
+    isLoading.value = false
+  }
+
   function clear() {
     files.value = []
     chartData.value = { ...dummyChartData }
   }
 
-  return { files, isLoading, fileCount, hasData, chartData, getChartData, loadFiles, clear }
+  return { files, isLoading, fileCount, hasData, chartData, getChartData, loadFiles, addFiles, clear }
 })

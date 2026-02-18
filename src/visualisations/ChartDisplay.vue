@@ -38,7 +38,11 @@ const radialOptions = computed(() => {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
-      r: { ticks: { color: textColour, backdropColor: 'transparent' }, grid: { color: gridColour }, pointLabels: { color: textColour } },
+      r: {
+        ticks: { color: textColour, backdropColor: 'transparent' },
+        grid: { color: gridColour },
+        pointLabels: { color: textColour },
+      },
     },
     plugins: { legend: { labels: { color: textColour } } },
   }
@@ -56,14 +60,56 @@ const simpleOptions = computed(() => {
 
 <template>
   <template v-if="currentData">
-    <Bar v-if="visStore.selectedChart === 'bar'" :key="`bar-${isDark}`" :data="currentData" :options="cartesianOptions" />
-    <Line v-else-if="visStore.selectedChart === 'line'" :key="`line-${isDark}`" :data="currentData" :options="cartesianOptions" />
-    <Pie v-else-if="visStore.selectedChart === 'pie'" :key="`pie-${isDark}`" :data="currentData" :options="simpleOptions" />
-    <Doughnut v-else-if="visStore.selectedChart === 'doughnut'" :key="`doughnut-${isDark}`" :data="currentData" :options="simpleOptions" />
-    <Radar v-else-if="visStore.selectedChart === 'radar'" :key="`radar-${isDark}`" :data="currentData" :options="radialOptions" />
-    <PolarArea v-else-if="visStore.selectedChart === 'polarArea'" :key="`polar-${isDark}`" :data="currentData" :options="radialOptions" />
-    <Bubble v-else-if="visStore.selectedChart === 'bubble'" :key="`bubble-${isDark}`" :data="currentData" :options="cartesianOptions" />
-    <Scatter v-else-if="visStore.selectedChart === 'scatter'" :key="`scatter-${isDark}`" :data="currentData" :options="cartesianOptions" />
+    <Bar
+      v-if="visStore.selectedChart === 'bar'"
+      :key="`bar-${isDark}`"
+      :data="currentData"
+      :options="cartesianOptions"
+    />
+    <Line
+      v-else-if="visStore.selectedChart === 'line'"
+      :key="`line-${isDark}`"
+      :data="currentData"
+      :options="cartesianOptions"
+    />
+    <Pie
+      v-else-if="visStore.selectedChart === 'pie'"
+      :key="`pie-${isDark}`"
+      :data="currentData"
+      :options="simpleOptions"
+    />
+    <Doughnut
+      v-else-if="visStore.selectedChart === 'doughnut'"
+      :key="`doughnut-${isDark}`"
+      :data="currentData"
+      :options="simpleOptions"
+    />
+    <Radar
+      v-else-if="visStore.selectedChart === 'radar'"
+      :key="`radar-${isDark}`"
+      :data="currentData"
+      :options="radialOptions"
+    />
+    <PolarArea
+      v-else-if="visStore.selectedChart === 'polarArea'"
+      :key="`polar-${isDark}`"
+      :data="currentData"
+      :options="radialOptions"
+    />
+    <Bubble
+      v-else-if="visStore.selectedChart === 'bubble'"
+      :key="`bubble-${isDark}`"
+      :data="currentData"
+      :options="cartesianOptions"
+    />
+    <Scatter
+      v-else-if="visStore.selectedChart === 'scatter'"
+      :key="`scatter-${isDark}`"
+      :data="currentData"
+      :options="cartesianOptions"
+    />
   </template>
-  <p v-else class="text-muted-foreground text-sm text-center">No data available for this chart type.</p>
+  <p v-else class="text-muted-foreground text-sm text-center">
+    No data available for this chart type.
+  </p>
 </template>

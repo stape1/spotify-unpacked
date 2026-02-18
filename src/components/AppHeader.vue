@@ -9,11 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 const isOpen = ref(false)
 
@@ -24,9 +20,7 @@ const colourMode = useColorMode({
 </script>
 
 <template>
-  <header
-    class="bg-background border-b flex h-12 shrink-0 items-center justify-between px-4"
-  >
+  <header class="bg-background border-b flex h-12 shrink-0 items-center justify-between px-4">
     <span class="text-base font-semibold">Spotify Unpacked</span>
 
     <div class="flex items-center gap-2">
@@ -34,28 +28,22 @@ const colourMode = useColorMode({
         <DropdownMenuTrigger as-child>
           <Button variant="outline" size="icon" class="size-8">
             <Sun class="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-            <Moon class="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+            <Moon
+              class="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
+            />
             <span class="sr-only">Toggle theme</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem @click="colourMode = 'light'">
-            Light
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="colourMode = 'dark'">
-            Dark
-          </DropdownMenuItem>
-          <DropdownMenuItem @click="colourMode = 'auto'">
-            System
-          </DropdownMenuItem>
+          <DropdownMenuItem @click="colourMode = 'light'"> Light </DropdownMenuItem>
+          <DropdownMenuItem @click="colourMode = 'dark'"> Dark </DropdownMenuItem>
+          <DropdownMenuItem @click="colourMode = 'auto'"> System </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <Popover v-model:open="isOpen">
         <PopoverTrigger as-child>
-          <button
-            class="text-muted-foreground hover:text-foreground text-sm transition-colors"
-          >
+          <button class="text-muted-foreground hover:text-foreground text-sm transition-colors">
             About
           </button>
         </PopoverTrigger>
@@ -72,11 +60,12 @@ const colourMode = useColorMode({
           <div class="space-y-2">
             <h4 class="text-sm font-semibold">About Spotify Unpacked</h4>
             <p class="text-muted-foreground text-sm">
-              An interactive tool for exploring your Spotify data export. All
-              processing happens locally in your browser.
+              An interactive tool for exploring your Spotify data export. All processing happens
+              locally in your browser.
             </p>
             <p class="text-muted-foreground text-sm">
-              Built by <!-- TODO: add names and links -->
+              Built by
+              <!-- TODO: add names and links -->
             </p>
           </div>
         </PopoverContent>
