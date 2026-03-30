@@ -6,6 +6,9 @@
 
 ```
 spotify-unpacked/
+├── download/                     # download instructions
+│   └── index.html                # Index file to show panels
+│   └── *.png                     # Panels for step-by-step download instructions
 ├── e2e/                          # End-to-end tests (Playwright)
 │   └── vue.spec.ts               # Browser-based integration tests
 ├── explorations/                  # Python data exploration scripts
