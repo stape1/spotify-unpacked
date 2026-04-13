@@ -8,6 +8,7 @@ import { CircleHelp } from 'lucide-vue-next'
 import FileDropZone from '@/components/FileDropZone.vue'
 import StatsCard from '@/components/StatsCard.vue'
 import { useDataStore } from '@/stores/data'
+import DownloadHelp from './DownloadHelp.vue'
 
 const dataStore = useDataStore()
 const dropZone = ref<InstanceType<typeof FileDropZone> | null>(null)
@@ -65,6 +66,8 @@ function onClear() {
       </Button>
 
       <StatsCard />
+      <DownloadHelp />
     </div>
+    
   </ScrollArea>
 </template>
