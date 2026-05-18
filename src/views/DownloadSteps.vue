@@ -12,7 +12,7 @@ import { RouterLink } from 'vue-router'
 
     <main class="panels">
       <figure>
-        <img src="/Panel1_DownlaodTitle.png" alt="Instructions on how to download your Spotify data" />
+        <img src="/Panel1_DownloadTitle.png" alt="Instructions on how to download your Spotify data" />
       </figure>
 
       <figure>
@@ -20,16 +20,27 @@ import { RouterLink } from 'vue-router'
       </figure>
 
       <figure>
-        <img src="/Panel3_NavigateBrowserMenu.png" alt="Log into spotify in a browser, go to your account (icon top right window) and in the Security and Privacy section go to Account Privacy" />
+        <img src="/Panel3_OpenWebBrowser.png" alt="Log into Spotify in a browser" />
       </figure>
 
       <figure>
-        <img src="/Panel4_Choose2DownloadTypes.png" alt="Choose to download your Account Data and Extended streaming history" />
+        <img src="/Panel4_AccessAccount.png" alt="Go to your account settings" />
       </figure>
 
       <figure>
-        <img src="/Panel5_Thankyou.png" alt="Thank you for requesting to download your Spotify data. When you donate your files to us, they will be visualised and sent back to you for your records." />
+        <img src="/Panel5_SelectAccountPrivacy.png" alt="Navigate to the Security and Privacy section" />
+      </figure>
 
+      <figure>
+        <img src="/Panel6_RequestData.png" alt="Choose to download your Account Data and Extended streaming history" />
+      </figure>
+
+      <figure>
+        <img src="/Panel7_Wait.png" alt="Wait for your data request to be processed" />
+      </figure>
+
+      <figure>
+        <img src="/Panel8_ThankYou.png" alt="Thank you for requesting to download your Spotify data. When you donate your files to us, they will be visualised and sent back to you for your records." />
       </figure>
     </main>
     <RouterLink to="/">
