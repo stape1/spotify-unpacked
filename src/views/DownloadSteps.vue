@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
-
+import { RouterLink } from "vue-router";
 </script>
 
 <template>
@@ -12,15 +11,27 @@ import { RouterLink } from 'vue-router'
 
     <main class="panels">
       <figure>
-        <img src="/Panel1_DownloadTitle.png" alt="Instructions on how to download your Spotify data" />
+        <img
+          src="/Panel1_DownloadTitle.png"
+          alt="Instructions on how to download your Spotify data"
+        />
       </figure>
 
       <figure>
-        <img src="/Panel2_Explain.png" alt="The download files you donate have your listening history and account data to understand what you listen to in 2025 from your library and from the Spotify algorithm." />
+        <img
+          src="/Panel2_Explain.png"
+          alt="The download files you donate have your listening history and account data to understand what you listen to in 2025 from your library and from the Spotify algorithm."
+        />
       </figure>
 
       <figure>
-        <img src="/Panel3_OpenWebBrowser.png" alt="Log into Spotify in a browser" />
+        <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="/Panel3_OpenWebBrowser.png"
+            alt="Log into Spotify in a browser"
+            class="cursor-pointer hover:opacity-80 transition"
+          />
+        </a>
       </figure>
 
       <figure>
@@ -28,11 +39,17 @@ import { RouterLink } from 'vue-router'
       </figure>
 
       <figure>
-        <img src="/Panel5_SelectAccountPrivacy.png" alt="Navigate to the Security and Privacy section" />
+        <img
+          src="/Panel5_SelectAccountPrivacy.png"
+          alt="Navigate to the Security and Privacy section"
+        />
       </figure>
 
       <figure>
-        <img src="/Panel6_RequestData.png" alt="Choose to download your Account Data and Extended streaming history" />
+        <img
+          src="/Panel6_RequestData.png"
+          alt="Choose to download your Account Data and Extended streaming history"
+        />
       </figure>
 
       <figure>
@@ -40,7 +57,10 @@ import { RouterLink } from 'vue-router'
       </figure>
 
       <figure>
-        <img src="/Panel8_ThankYou.png" alt="Thank you for requesting to download your Spotify data. When you donate your files to us, they will be visualised and sent back to you for your records." />
+        <img
+          src="/Panel8_ThankYou.png"
+          alt="Thank you for requesting to download your Spotify data. When you donate your files to us, they will be visualised and sent back to you for your records."
+        />
       </figure>
     </main>
     <RouterLink to="/">
