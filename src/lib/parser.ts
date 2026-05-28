@@ -1,0 +1,51 @@
+export interface MusicEntry {
+  ts: string
+  platform: string
+  msPlayed: number
+  trackName: string
+  artistName: string
+  albumName: string
+  trackUri: string
+  reasonStart: string
+  reasonEnd: string
+  shuffle: boolean
+  skipped: boolean
+  episodeName: string | null
+  episodeShowName: string | null
+  spotifyEpisodeUri: string | null
+  audiobookTitle: string | null
+  audiobookUri: string | null
+  audiobookChapterUri: string | null
+  audiobookChapterTitle: string | null
+}
+
+export function parseStreamingFile(raw: unknown): MusicEntry[] {
+  if (!Array.isArray(raw)) return []
+
+  return raw
+    .filter((entry) =>
+      entry.ts?.startsWith('2025') &&
+      entry.master_metadata_track_name !== null &&
+      entry.spotify_track_uri !== null
+    )
+    .map((entry) => ({
+      ts: entry.ts,
+      platform: entry.platform,
+      msPlayed: entry.ms_played,
+      trackName: entry.master_metadata_track_name,
+      artistName: entry.master_metadata_album_artist_name,
+      albumName: entry.master_metadata_album_album_name,
+      trackUri: entry.spotify_track_uri,
+      reasonStart: entry.reason_start,
+      reasonEnd: entry.reason_end,
+      shuffle: entry.shuffle,
+      skipped: entry.skipped,
+      episodeName: entry.episode_name,
+      episodeShowName: entry.episode_show_name,
+      spotifyEpisodeUri: entry.spotify_episode_uri,
+      audiobookTitle: entry.audiobook_title,
+      audiobookUri: entry.audiobook_uri,
+      audiobookChapterUri: entry.audiobook_chapter_uri,
+      audiobookChapterTitle: entry.audiobook_chapter_title,
+    }))
+}
