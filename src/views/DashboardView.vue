@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import DataPanel from '@/components/DataPanel.vue'
-import VisualisationPanel from '@/components/VisualisationPanel.vue'
+import UploadPanel from '@/components/UploadPanel.vue'
 import ControlsPanel from '@/components/ControlsPanel.vue'
 </script>
 
@@ -14,7 +14,7 @@ import ControlsPanel from '@/components/ControlsPanel.vue'
     <ResizableHandle with-handle />
 
     <ResizablePanel :default-size="55" :min-size="30">
-      <VisualisationPanel />
+      <UploadPanel />
     </ResizablePanel>
 
     <ResizableHandle with-handle />

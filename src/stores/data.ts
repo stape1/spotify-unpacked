@@ -1,10 +1,13 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { ChartData } from 'chart.js'
+import { parseStreamingFile, type MusicEntry } from '@/lib/parser'
+import { classifyFile, type FileTypeKey, fileTypes } from '@/lib/fileTypes'
 
 export interface LoadedFile {
   name: string
   size: number
+  type: FileTypeKey | 'unrecognised'
 }
 
 const dummyChartData: Record<string, ChartData> = {
@@ -103,6 +106,7 @@ const dummyChartData: Record<string, ChartData> = {
 }
 
 export const useDataStore = defineStore('data', () => {
+  const entries = ref<MusicEntry[]>([])
   const files = ref<LoadedFile[]>([])
   const isLoading = ref(false)
   const chartData = ref<Record<string, ChartData>>({ ...dummyChartData })
@@ -113,41 +117,52 @@ export const useDataStore = defineStore('data', () => {
   function getChartData(chartType: string): ChartData | undefined {
     return chartData.value[chartType]
   }
+async function loadFiles(rawFiles: File[]) {
+  isLoading.value = true
 
-  async function loadFiles(rawFiles: File[]) {
-    isLoading.value = true
-
-    files.value = rawFiles.map((f) => ({
-      name: f.name,
-      size: f.size,
-    }))
-
-    // TODO: parse files and populate chartData with real data
-    // chartData.value = buildChartDataFromParsed(...)
-
-    isLoading.value = false
+  for (const file of rawFiles) {
+    const text = await file.text()
+    const json = JSON.parse(text)
+    const parsed = parseStreamingFile(json)
+    entries.value.push(...parsed)
+    files.value.push({ name: file.name, size: file.size, type: classifyFile(file.name) })
   }
 
-  async function addFiles(rawFiles: File[]) {
-    isLoading.value = true
+  isLoading.value = false
+}
 
-    const newFiles = rawFiles.map((f) => ({
-      name: f.name,
-      size: f.size,
-    }))
+const fileTypeStatus = computed(() => {
+  const uploaded = new Set(files.value.map((f) => f.type))
+  return Object.fromEntries(
+    fileTypes.map((ft) => [ft.key, uploaded.has(ft.key)])
+  ) as Record<FileTypeKey, boolean>
+})
 
-    files.value.push(...newFiles)
+const listeningTimeHours = computed(() => {
+  const totalMs = entries.value.reduce((sum, e) => sum + e.msPlayed, 0)
+  return Math.round(totalMs / 1000 / 60 / 60)
+})
 
-    // TODO: parse files and populate chartData with real data
-    // chartData.value = buildChartDataFromParsed(...)
+const uniqueTrackCount = computed(() => {
+  return new Set(entries.value.map((e) => e.trackUri)).size
+})
 
-    isLoading.value = false
+const favouriteHour = computed(() => {
+  const counts: Record<number, number> = {}
+  for (const entry of entries.value) {
+    const hour = new Date(entry.ts).getHours()
+    counts[hour] = (counts[hour] ?? 0) + 1
   }
+  const topHour = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]
+  if (!topHour) return null
+  return new Date(0, 0, 0, Number(topHour[0])).toLocaleTimeString([], { hour: 'numeric', hour12: true })
+})
 
-  function clear() {
-    files.value = []
-    chartData.value = { ...dummyChartData }
-  }
+function clear() {
+  files.value = []
+  entries.value = []
+  chartData.value = { ...dummyChartData }
+}
 
-  return { files, isLoading, fileCount, hasData, chartData, getChartData, loadFiles, addFiles, clear }
+  return { files, entries, isLoading, fileCount, fileTypeStatus, hasData, chartData, getChartData, loadFiles, clear, listeningTimeHours, uniqueTrackCount, favouriteHour }
 })
