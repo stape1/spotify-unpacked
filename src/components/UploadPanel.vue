@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import FileCard from '@/components/FileCard.vue';
 import BanCard from '@/components/BanCard.vue';
-import FilesProgressPanel from '@/components/FilesProgressPanel.vue';
 import { useDataStore } from '@/stores/data';
+import { fileTypes } from '@/lib/fileTypes';
 
-const datastore = useDataStore(); // initialise store 
+const datastore = useDataStore(); // initialise store
 
 </script>
 
@@ -18,9 +19,16 @@ const datastore = useDataStore(); // initialise store
       <BanCard label="Favourite time of day" :value="datastore.favouriteHour ?? '-'"/>
     </div>
 
-    <!-- File details panel -->
-    <div class="flex-1">
-      <FilesProgressPanel />
+    <div class="grid grid-cols-1 gap-4">
+      <FileCard
+        v-for="ft in fileTypes"
+        :key="ft.key"
+        :label="ft.label"
+        :satisfied="datastore.fileTypeStatus[ft.key]"
+        :what="ft.what"
+        :file="ft.file"
+        :why="ft.why"
+      />
     </div>
 
   </div>

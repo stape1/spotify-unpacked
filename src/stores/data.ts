@@ -2,11 +2,12 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { ChartData } from 'chart.js'
 import { parseStreamingFile, type MusicEntry } from '@/lib/parser'
-
+import { classifyFile, type FileTypeKey, fileTypes } from '@/lib/fileTypes'
 
 export interface LoadedFile {
   name: string
   size: number
+  type: FileTypeKey | 'unrecognised'
 }
 
 const dummyChartData: Record<string, ChartData> = {
@@ -124,11 +125,18 @@ async function loadFiles(rawFiles: File[]) {
     const json = JSON.parse(text)
     const parsed = parseStreamingFile(json)
     entries.value.push(...parsed)
-    files.value.push({ name: file.name, size: file.size })
+    files.value.push({ name: file.name, size: file.size, type: classifyFile(file.name) })
   }
 
   isLoading.value = false
 }
+
+const fileTypeStatus = computed(() => {
+  const uploaded = new Set(files.value.map((f) => f.type))
+  return Object.fromEntries(
+    fileTypes.map((ft) => [ft.key, uploaded.has(ft.key)])
+  ) as Record<FileTypeKey, boolean>
+})
 
 const listeningTimeHours = computed(() => {
   const totalMs = entries.value.reduce((sum, e) => sum + e.msPlayed, 0)
@@ -156,5 +164,5 @@ function clear() {
   chartData.value = { ...dummyChartData }
 }
 
-  return { files, entries, isLoading, fileCount, hasData, chartData, getChartData, loadFiles, clear, listeningTimeHours, uniqueTrackCount, favouriteHour }
+  return { files, entries, isLoading, fileCount, fileTypeStatus, hasData, chartData, getChartData, loadFiles, clear, listeningTimeHours, uniqueTrackCount, favouriteHour }
 })
