@@ -14,7 +14,7 @@ const dataStore = useDataStore()
 const dropZone = ref<InstanceType<typeof FileDropZone> | null>(null)
 
 function onFilesDropped(files: File[]) {
-  dataStore.addFiles(files)
+  dataStore.loadFiles(files)
 }
 
 function onClear() {
