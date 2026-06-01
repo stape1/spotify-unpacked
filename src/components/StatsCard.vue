@@ -17,7 +17,7 @@ const fileCounts = computed(() => {
 
   dataStore.files.forEach((file) => {
     const nameLower = file.name.toLowerCase()
-    if (nameLower.includes('streaming')) {
+    if (nameLower.includes('streaming_history')) {
       counts.streaming++
       if (nameLower.includes('2025')) {
         counts.streaming2025++

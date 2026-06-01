@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import JSZip from 'jszip'
 
 async function readDirectoryEntries(directory: FileSystemDirectoryEntry): Promise<File[]> {
   const reader = directory.createReader()
@@ -22,7 +23,7 @@ async function readDirectoryEntries(directory: FileSystemDirectoryEntry): Promis
 
 async function collectFiles(event: DragEvent): Promise<File[]> {
   const items = Array.from(event.dataTransfer?.items ?? [])
-  const entries = items.map(item => item.webkitGetAsEntry?.() ?? null)  // all sync, before any await
+  const entries = items.map(item => item.webkitGetAsEntry?.() ?? null) // all sync, before any await
   const files: File[] = []
 
   for (const entry of entries) {
@@ -53,14 +54,31 @@ export function useFileDrop(onFiles: (files: File[]) => void) {
     isDragOver.value = false
   }
 
-async function onDrop(event: DragEvent) {
-  event.preventDefault()
-  isDragOver.value = false
-  isProcessing.value = true
-  const files = await collectFiles(event)
-  isProcessing.value = false
-  if (files.length > 0) onFiles(files)
-}
+  async function onDrop(event: DragEvent) {
+    event.preventDefault()
+    isDragOver.value = false
+    isProcessing.value = true
+    try {
+      const rawFiles = await collectFiles(event)
+      const files: File[] = []
+      for (const file of rawFiles) {
+        if (file.name.endsWith('.zip')) {
+          const zip = await JSZip.loadAsync(file)
+          for (const [path, entry] of Object.entries(zip.files)) {
+            if (entry.dir || !path.endsWith('.json')) continue
+            const content = await entry.async('string')
+            const filename = path.split('/').pop()!
+            files.push(new File([content], filename, { type: 'application/json' }))
+          }
+        } else {
+          files.push(file)
+        }
+      }
+      if (files.length > 0) onFiles(files)
+    } finally {
+      isProcessing.value = false
+    }
+  }
 
   return { isDragOver, isProcessing, onDragOver, onDragLeave, onDrop }
 }

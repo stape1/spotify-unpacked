@@ -119,16 +119,22 @@ export const useDataStore = defineStore('data', () => {
   }
 async function loadFiles(rawFiles: File[]) {
   isLoading.value = true
+  try {
 
-  for (const file of rawFiles) {
-    const text = await file.text()
-    const json = JSON.parse(text)
-    const parsed = parseStreamingFile(json)
-    entries.value.push(...parsed)
-    files.value.push({ name: file.name, size: file.size, type: classifyFile(file.name) })
+    for (const file of rawFiles) {
+      try{
+      const text = await file.text()
+      const json = JSON.parse(text)
+      const parsed = parseStreamingFile(json)
+      entries.value.push(...parsed)
+      files.value.push({ name: file.name, size: file.size, type: classifyFile(file.name) })
+      } catch {
+        // skip files that can't be parsed
+      }
+    }
   }
-
-  isLoading.value = false
+  finally {
+  isLoading.value = false}
 }
 
 const fileTypeStatus = computed(() => {
